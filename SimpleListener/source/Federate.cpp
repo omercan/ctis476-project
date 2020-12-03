@@ -74,7 +74,6 @@ bool Federate::resignAndDestroyFederation()
 	catch (rti1516e::FederatesCurrentlyJoined &e)
 	{
 		std::wcout << L"cannot destroy: federates currently joined. (" << e.what() << L")" << std::endl;
-		return false;
 	}
 	catch (rti1516e::Exception &e)
 	{
