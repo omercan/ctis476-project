@@ -16,6 +16,41 @@ bool Federate::createAndJoinFederation(std::wstring& federationName, std::wstrin
 	rtiAmbassadorFactory = new rti1516e::RTIambassadorFactory();
 
 	//create and join federation
+	try {
+		rtiAmbassador = rtiAmbassadorFactory->createRTIambassador();
+		rtiAmbassador->connect(*this, rti1516e::HLA_EVOKED);
+	}
+	catch (rti1516e::Exception &e) 
+	{
+		rtiAmbassador.reset();
+		std::wcout << L"Error: " << e.what() << std::endl;
+		return false;
+	}
+
+	try
+	{
+		rtiAmbassador->createFederationExecution(federationName, fomFile);
+	}
+	catch (rti1516e::FederationExecutionAlreadyExists &e)
+	{
+		std::wcout << L"federation execution already exists";
+	}
+	catch (rti1516e::Exception &e) 
+	{
+		std::wcout << L"Error: " << e.what() << std::endl;
+		return false;
+	}
+
+	try
+	{
+		federateHandle = rtiAmbassador->joinFederationExecution(federateName, federationName);
+	}
+	catch (rti1516e::Exception &e)
+	{
+		std::wcout << L"Error: " << e.what() << std::endl;
+		return false;
+	}
+
 	return true;
 }
 
