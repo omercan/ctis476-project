@@ -33,7 +33,7 @@ bool Federate::createAndJoinFederation(std::wstring& federationName, std::wstrin
 	}
 	catch (rti1516e::FederationExecutionAlreadyExists &e)
 	{
-		std::wcout << L"federation execution already exists";
+		std::wcout << L"federation execution already exists (" << e.what() << L")" << std::endl;
 	}
 	catch (rti1516e::Exception &e) 
 	{
@@ -57,6 +57,31 @@ bool Federate::createAndJoinFederation(std::wstring& federationName, std::wstrin
 bool Federate::resignAndDestroyFederation()
 {
    //resign and leave federation
+	try
+	{
+		rtiAmbassador->resignFederationExecution(rti1516e::ResignAction::NO_ACTION);
+	}
+	catch (rti1516e::Exception &e)
+	{
+		std::wcout << L"Error: " << e.what() << std::endl;
+		return false;
+	}
+
+	try
+	{
+		rtiAmbassador->destroyFederationExecution(federationName);
+	}
+	catch (rti1516e::FederatesCurrentlyJoined &e)
+	{
+		std::wcout << L"cannot destroy: federates currently joined. (" << e.what() << L")" << std::endl;
+		return false;
+	}
+	catch (rti1516e::Exception &e)
+	{
+		std::wcout << L"Error: " << e.what() << std::endl;
+		return false;
+	}
+
    return true;
 }
 
